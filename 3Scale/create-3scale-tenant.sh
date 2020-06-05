@@ -22,36 +22,21 @@ echo "---------------------------------"
 
 curl -X POST $masterRoute"/master/api/providers.xml" -d "access_token=$masterAccessToken" -d "org_name=$tenantName" -d "username=$tenantName-admin" --data-urlencode "email=$tenantEmail" -d "password=$tenantPassword" -k >> /tmp/$filename
 
+accountID=$(xmllint /tmp/$filename --xpath 'string(//signup/account/id)')
+userID=$(xmllint /tmp/$filename --xpath 'string(//users/user/id)')
+
 echo "---------------------------------"
 echo "---------------------------------"
 echo "Activating Tenant "$tenantName
 echo "---------------------------------"
 echo "---------------------------------"
 
-echo $accountID
-echo $userID
-
 curl -X PUT $masterRoute"/admin/api/accounts/"$accountID"/users/"$userID"/activate.xml" -d "access_token=$masterAccessToken" -k -vv
 
-echo "---------------------------------"
-echo "---------------------------------"
 echo "Printing routes created automatically by ZYNC"
 echo "---------------------------------"
 echo "---------------------------------"
-sleep 5
-
 for route in  $(oc get routes -n $namespace | grep $tenantName | awk '{print $2}'); 
   do
     echo "https://"$route
   done
-
-
-
-
-
-
-
-
-
-
-
